@@ -36,6 +36,52 @@ const nls_ts = {
     completion: {
       message: "extension.completion.message"
     }
+  },
+  jsgeneratetests: {
+    generateTests: {
+      run: {
+        title: "jsgeneratetests.generateTests.run.title"
+      },
+      settings: {
+        title: "jsgeneratetests.generateTests.settings.title"
+      }
+    }
+  },
+  jsgenerateTests: {
+    submenu: {
+      title: "jsgenerateTests.submenu.title"
+    }
+  },
+  error: {
+    common: {
+      template: "error.common.template"
+    }
+  },
+  currentOverwrite: {
+    text: "currentOverwrite.text"
+  },
+  currentNoSkipIndex: {
+    text: "currentNoSkipIndex.text"
+  },
+  currentIife: {
+    text: "currentIife.text"
+  },
+  generation: {
+    extra: {
+      options: {
+        placeholder: "generation.extra.options.placeholder"
+      }
+    }
+  },
+  run: {
+    generator: {
+      title: "run.generator.title"
+    }
+  },
+  select: {
+    folder: {
+      placeholder: "select.folder.placeholder"
+    }
   }
 };
 

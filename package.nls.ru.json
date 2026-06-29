@@ -6,8 +6,18 @@
   "configuration.generateTests.overwrite": "Перезаписывать существующие тестовые файлы",
   "configuration.generateTests.skipIndexJs": "Пропускать index.js (если false – генерировать тесты и для них)",
   "configuration.generateTests.iife": "Генерировать тесты для браузерных IIFE-скриптов",
-  "extension.firsttime.run.message": "'Первый запуск на этом проекте. Настраиваем параметры...'",
-  "extension.firsttime.select.source.folder.title": "'Выберите корневую папку с JS-файлами (rootDir)'",
-  "extension.firsttime.select.test.folder.title": "'Выберите папку для сохранения тестов'",
-  "extension.completion.message": "`Генерация тестов завершена для проекта:\\n{0}`"
+  "extension.firsttime.run.message": "Первый запуск на этом проекте. Настраиваем параметры...",
+  "extension.firsttime.select.source.folder.title": "Выберите корневую папку с JS-файлами (rootDir)",
+  "extension.firsttime.select.test.folder.title": "Выберите папку для сохранения тестов",
+  "extension.completion.message": "Генерация тестов завершена для проекта:\\n{0}",
+  "jsgeneratetests.generateTests.run.title": "Запуск генерации тестов",
+  "jsgeneratetests.generateTests.settings.title": "Настройки",
+  "jsgenerateTests.submenu.title": "Генерация Jest-тестов",
+  "error.common.template": "`Ошибка: {0}`",
+  "currentOverwrite.text": "Перезаписывать существующие .test.js файлы",
+  "currentNoSkipIndex.text": "Генерировать тесты для index.js",
+  "currentIife.text": "Генерировать для браузерных IIFE-скриптов",
+  "generation.extra.options.placeholder": "Дополнительные параметры генерации",
+  "run.generator.title": "Генерация Jest-тестов...",
+  "select.folder.placeholder": "Введите путь к папке вручную"
 }

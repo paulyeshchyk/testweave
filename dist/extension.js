@@ -7,6 +7,87 @@ var __commonJS = (cb, mod) => function __require() {
   }
 };
 
+// nls_loader.js
+var require_nls_loader = __commonJS({
+  "nls_loader.js"(exports2, module2) {
+    var fs = require("fs");
+    var path = require("path");
+    var vscode2 = require("vscode");
+    var currentTranslations = {};
+    function initNls(context) {
+      const locale = vscode2.env.language;
+      const rootPath = context.extensionPath;
+      let nlsPath = path.join(rootPath, `package.nls.${locale}.json`);
+      if (!fs.existsSync(nlsPath)) {
+        nlsPath = path.join(rootPath, "package.nls.json");
+      }
+      try {
+        if (fs.existsSync(nlsPath)) {
+          currentTranslations = JSON.parse(fs.readFileSync(nlsPath, "utf8"));
+        }
+      } catch (err) {
+        console.error("Failed to load NLS file:", err);
+      }
+    }
+    function translate2(key, ...args) {
+      let template = currentTranslations[key] || key;
+      if (args.length > 0) {
+        template = template.replace(/{(d+)}/g, (match, number) => {
+          const index = parseInt(number, 10);
+          return typeof args[index] !== "undefined" ? String(args[index]) : match;
+        });
+      }
+      return template;
+    }
+    module2.exports = { initNls, translate: translate2 };
+  }
+});
+
+// nls_ts.js
+var require_nls_ts = __commonJS({
+  "nls_ts.js"(exports2, module2) {
+    var { translate: translate2 } = require_nls_loader();
+    var nls_ts2 = {
+      app: {
+        description: "app.description"
+      },
+      configuration: {
+        title: "configuration.title",
+        generateTests: {
+          defaultRootDir: "configuration.generateTests.defaultRootDir",
+          defaultOutputDir: "configuration.generateTests.defaultOutputDir",
+          overwrite: "configuration.generateTests.overwrite",
+          skipIndexJs: "configuration.generateTests.skipIndexJs",
+          iife: "configuration.generateTests.iife"
+        }
+      },
+      extension: {
+        firsttime: {
+          run: {
+            message: "extension.firsttime.run.message"
+          },
+          select: {
+            source: {
+              folder: {
+                title: "extension.firsttime.select.source.folder.title"
+              }
+            },
+            test: {
+              folder: {
+                title: "extension.firsttime.select.test.folder.title"
+              }
+            }
+          }
+        },
+        completion: {
+          message: "extension.completion.message"
+        }
+      }
+    };
+    module2.exports = { nls_ts: nls_ts2, translate: translate2 };
+  }
+});
+
 // src/generate-tests.js
 var require_generate_tests = __commonJS({
   "src/generate-tests.js"(exports2, module2) {
@@ -242,6 +323,7 @@ Options:
 });
 
 // src/extension.js
+var { nls_ts, translate } = require_nls_ts();
 var vscode = require("vscode");
 var generator = require_generate_tests();
 function activate(context) {
@@ -257,10 +339,10 @@ function activate(context) {
       let skipIndexJs = config.get("skipIndexJs", true);
       let iife = config.get("iife", false);
       if (!hasSavedSettings) {
-        vscode.window.showInformationMessage("\u041F\u0435\u0440\u0432\u044B\u0439 \u0437\u0430\u043F\u0443\u0441\u043A \u043D\u0430 \u044D\u0442\u043E\u043C \u043F\u0440\u043E\u0435\u043A\u0442\u0435. \u041D\u0430\u0441\u0442\u0440\u0430\u0438\u0432\u0430\u0435\u043C \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440\u044B...");
-        finalRootDir = await selectFolder("\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043A\u043E\u0440\u043D\u0435\u0432\u0443\u044E \u043F\u0430\u043F\u043A\u0443 \u0441 JS-\u0444\u0430\u0439\u043B\u0430\u043C\u0438 (rootDir)", rootDir);
+        vscode.window.showInformationMessage(translate(nls_ts.extension.firsttime.run.message));
+        finalRootDir = await selectFolder(translate(nls_ts.extension.firsttime.select.source.folder.title), rootDir);
         if (!finalRootDir) return;
-        finalOutputDir = await selectFolder("\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043F\u0430\u043F\u043A\u0443 \u0434\u043B\u044F \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F \u0442\u0435\u0441\u0442\u043E\u0432", outputDir);
+        finalOutputDir = await selectFolder(translate(nls_ts.extension.firsttime.select.test.folder.title), outputDir);
         if (!finalOutputDir) return;
         const selected = await showOptionsQuickPick(overwrite, !skipIndexJs, iife);
         if (!selected) return;
@@ -274,8 +356,7 @@ function activate(context) {
       await config.update("skipIndexJs", skipIndexJs, vscode.ConfigurationTarget.Workspace);
       await config.update("iife", iife, vscode.ConfigurationTarget.Workspace);
       await runGeneratorDirect(finalRootDir, finalOutputDir, overwrite, skipIndexJs, iife);
-      vscode.window.showInformationMessage(`\u2705 \u0413\u0435\u043D\u0435\u0440\u0430\u0446\u0438\u044F \u0442\u0435\u0441\u0442\u043E\u0432 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430 \u0434\u043B\u044F \u043F\u0440\u043E\u0435\u043A\u0442\u0430:
-${finalRootDir}`);
+      vscode.window.showInformationMessage(translate(nls_ts.extension.completion.message, finalRootDir));
     } catch (error) {
       console.error(error);
       vscode.window.showErrorMessage(`\u274C \u041E\u0448\u0438\u0431\u043A\u0430: ${error.message}`);

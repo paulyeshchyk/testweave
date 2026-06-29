@@ -55,7 +55,8 @@ function activate(context) {
             vscode.window.showInformationMessage(translate(nls_ts.extension.completion.message, finalRootDir));
         } catch (error) {
             console.error(error);
-            vscode.window.showErrorMessage(`❌ Ошибка: ${error.message}`);
+            let msg = error instanceof Error ? error.message : String(error);
+            vscode.window.showErrorMessage(translate(nls_ts.error.common.template, msg));
         }
     });
 
@@ -75,14 +76,14 @@ function activate(context) {
  */
 async function showOptionsQuickPick(currentOverwrite, currentNoSkipIndex, currentIife) {
     const options = [
-        { label: 'Перезаписывать существующие .test.js файлы', picked: currentOverwrite, id: 'overwrite' },
-        { label: 'Генерировать тесты для index.js', picked: currentNoSkipIndex, id: 'noSkipIndexJs' },
-        { label: 'Генерировать для браузерных IIFE-скриптов', picked: currentIife, id: 'iife' }
+        { label: translate(nls_ts.currentOverwrite.text), picked: currentOverwrite, id: 'overwrite' },
+        { label: translate(nls_ts.currentNoSkipIndex.text), picked: currentNoSkipIndex, id: 'noSkipIndexJs' },
+        { label: translate(nls_ts.currentIife.text), picked: currentIife, id: 'iife' }
     ];
 
     const selected = await vscode.window.showQuickPick(options, {
         canPickMany: true,
-        placeHolder: 'Дополнительные параметры генерации'
+        placeHolder: translate(nls_ts.generation.extra.options.placeholder)
     });
 
     if (!selected) return null;
@@ -96,11 +97,16 @@ async function showOptionsQuickPick(currentOverwrite, currentNoSkipIndex, curren
 
 /**
  * Прямой запуск генерации
+ * @param {any} rootDir
+ * @param {any} outputDir
+ * @param {boolean} overwrite
+ * @param {boolean} skipIndexJs
+ * @param {boolean} iife
  */
 async function runGeneratorDirect(rootDir, outputDir, overwrite, skipIndexJs, iife) {
     await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: "Генерация Jest-тестов...",
+        title: translate(nls_ts.run.generator.title),
         cancellable: false
     }, async () => {
         await generator.generateTests({
@@ -115,6 +121,7 @@ async function runGeneratorDirect(rootDir, outputDir, overwrite, skipIndexJs, ii
 
 /**
  * Выбор папки
+ * @param {string} title
  */
 async function selectFolder(title, defaultValue = '') {
     const uris = await vscode.window.showOpenDialog({
@@ -132,7 +139,7 @@ async function selectFolder(title, defaultValue = '') {
     return await vscode.window.showInputBox({
         title,
         value: defaultValue,
-        placeHolder: 'Введите путь к папке вручную'
+        placeHolder: translate(nls_ts.select.folder.placeholder)
     });
 }
 

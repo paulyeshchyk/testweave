@@ -32,17 +32,17 @@
     "commands": [
       {
         "command": "jsgeneratetests.generateTests.run",
-        "title": "Запуск генерации тестов"
+        "title": "%jsgeneratetests.generateTests.run.title%"
       },
       {
         "command": "jsgeneratetests.generateTests.settings",
-        "title": "Настройки"
+        "title": "%jsgeneratetests.generateTests.settings.title%"
       }
     ],
     "submenus": [
       {
         "id": "jsgenerateTests.submenu",
-        "label": "Генерация Jest-тестов"
+        "label": "%jsgenerateTests.submenu.title%"
       }
     ],
     "menus": {
