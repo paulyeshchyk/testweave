@@ -1,0 +1,121 @@
+{
+  "name": "testweave",
+  "publisher": "paulyestchick",
+  "displayName": "TestWeave",
+  "description": "%app.description%",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.125.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "repository": {
+    "url": "https://github.com/paulyeshchyk/testweave"
+  },
+  "changelogUrl": "https://github.com/paulyeshchyk/testweave/blob/main/CHANGELOG.md",
+  "releaseNotes": "https://github.com/paulyeshchyk/testweave/blob/main/CHANGELOG.md",
+  "main": "dist/extension.js",
+  "files": [
+    "dist",
+    "package.nls.json",
+    "package.nls.ru.json",
+    "README.md",
+    "README.ru.md",
+    "CHANGELOG.md",
+    "LICENSE.md"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "jsgeneratetests.generateTests.run",
+        "title": "Запуск генерации тестов"
+      },
+      {
+        "command": "jsgeneratetests.generateTests.settings",
+        "title": "Настройки"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "jsgenerateTests.submenu",
+        "label": "Генерация Jest-тестов"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "submenu": "jsgenerateTests.submenu",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation@1"
+        }
+      ],
+      "jsgenerateTests.submenu": [
+        {
+          "command": "jsgeneratetests.generateTests.run",
+          "when": "explorerResourceIsFolder",
+          "group": "1_top@1"
+        },
+        {
+          "command": "jsgeneratetests.generateTests.settings",
+          "when": "explorerResourceIsFolder",
+          "group": "1_top@2"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "%configuration.title%",
+      "properties": {
+        "generateTests.defaultRootDir": {
+          "type": "string",
+          "default": "",
+          "description": "%generateTests.defaultRootDir%"
+        },
+        "generateTests.defaultOutputDir": {
+          "type": "string",
+          "default": "",
+          "description": "%configuration.generateTests.defaultOutputDir%"
+        },
+        "generateTests.overwrite": {
+          "type": "boolean",
+          "default": false,
+          "description": "%configuration.generateTests.overwrite%"
+        },
+        "generateTests.skipIndexJs": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.generateTests.skipIndexJs%"
+        },
+        "generateTests.iife": {
+          "type": "boolean",
+          "default": false,
+          "description": "%configuration.generateTests.iife%"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "node build.js",
+    "build": "npm run compile",
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "package": "npm run build:prod && vsce package -o ./build",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "24.x",
+    "@types/vscode": "^1.125.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.5.0"
+  },
+  "overrides": {
+    "diff": "^8.0.4",
+    "serialize-javascript": "^7.0.6"
+  }
+}
