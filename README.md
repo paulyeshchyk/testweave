@@ -9,7 +9,7 @@ TestWeave helps you create test files for your JS code quickly and easily.
 ### 1. From VS Code (Recommended)
 
 - Right-click on a folder in Explorer
-- Go to **Генерация js-тестов** - **Запуск** (Run)
+- Go to **TestWeave** - **Run Test Generation** (Run)
 - On first use in a project, it will ask you to choose folders
 - Next times — it runs instantly using saved settings
 
@@ -46,6 +46,6 @@ Remembers settings for each project Can overwrite existing test files Can includ
 
 ## How to Install
 
-Install TestWeave from VS Code Extensions Open your project folder Right-click on a folder - Генерация js-тестов - Запуск
+Install TestWeave from VS Code Extensions Open your project folder Right-click on a folder - TestWeaver - Run Test Generation
 
 That's it! Your tests will be ready in seconds.

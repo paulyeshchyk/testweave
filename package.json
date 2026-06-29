@@ -3,7 +3,7 @@
   "publisher": "paulyestchick",
   "displayName": "TestWeave",
   "description": "%app.description%",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "engines": {
     "vscode": "^1.125.0"
   },
