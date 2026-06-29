@@ -12,7 +12,7 @@
   "extension.completion.message": "Test generation completed for project:\n{0}",
   "jsgeneratetests.generateTests.run.title": "Run Test Generation",
   "jsgeneratetests.generateTests.settings.title": "Settings",
-  "jsgenerateTests.submenu.title": "Generate JS Tests",
+  "jsgenerateTests.submenu.title": "TestWeave",
   "error.common.template": "Error: {0}",
   "currentOverwrite.text": "Overwrite existing .test.js files",
   "currentNoSkipIndex.text": "Generate tests for index.js",

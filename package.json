@@ -3,7 +3,7 @@
   "publisher": "paulyestchick",
   "displayName": "TestWeave",
   "description": "%app.description%",
-  "version": "0.1.0",
+  "version": "0.1.9",
   "engines": {
     "vscode": "^1.125.0"
   },
@@ -73,7 +73,7 @@
         "generateTests.defaultRootDir": {
           "type": "string",
           "default": "",
-          "description": "%generateTests.defaultRootDir%"
+          "description": "%configuration.generateTests.defaultRootDir%"
         },
         "generateTests.defaultOutputDir": {
           "type": "string",
@@ -103,23 +103,37 @@
   },
   "scripts": {
     "compile": "node build.js",
+    "type-check": "tsc --noEmit",
     "build": "npm run compile",
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "package": "npm run build && vsce package -o ./build",
-    "test": "vscode-test"
+    "build:prod": "cross-env NODE_ENV=production npm run compile",
+    "build:dev": "cross-env NODE_ENV=development npm run compile",
+    "watch": "node build.js --watch",
+    "vscode:prepublish": "npm run build:prod",
+    "package": "npm run build:prod && vsce package -o ./build",
+    "publish-vsix": "vsce publish",
+    "publish": "npm run package && npm run publish-vsix",
+    "format": "prettier --write .",
+    "release:patch": "npm run build:prod && node scripts/bump-version.js",
+    "release:minor": "npm run build:prod && node scripts/bump-minor.js",
+    "test": "jest"
   },
   "devDependencies": {
+    "@jest/globals": "^30.4.1",
+    "@types/jest": "^30.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
     "@types/vscode": "^1.125.0",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.0.0",
+    "cross-env": "^10.1.0",
     "esbuild": "^0.28.1",
-    "eslint": "^10.5.0"
+    "jest": "^30.4.2"
   },
   "overrides": {
     "diff": "^8.0.4",
     "serialize-javascript": "^7.0.6"
+  },
+  "dependencies": {
+    "globals": "^17.7.0"
   }
 }

@@ -68,6 +68,7 @@ function getExportedNames(modulePath) {
 
     return { type: 'other' };
   } catch (err) {
+    console.error('getExportedNames',err)
     return { type: 'browser' };
   }
 }

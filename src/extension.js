@@ -1,3 +1,5 @@
+import { initNls } from '../nls_loader.js';
+
 const { nls_ts, translate } = require('../nls_ts.js');
 const vscode = require('vscode');
 const generator = require('./generate-tests.js');
@@ -64,6 +66,10 @@ function activate(context) {
     const settingsCommand = vscode.commands.registerCommand('jsgeneratetests.generateTests.settings', () => {
         vscode.commands.executeCommand('workbench.action.openSettings', 'generateTests');
     });
+
+    const locale = vscode.env.language;
+    const rootPath = context.extensionPath;
+    initNls(locale, rootPath);
 
     context.subscriptions.push(runCommand, settingsCommand);
 }
