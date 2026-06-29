@@ -21,6 +21,7 @@
   "main": "dist/extension.js",
   "files": [
     "dist",
+    "src/generate-tests.js",
     "package.nls.json",
     "package.nls.ru.json",
     "README.md",
@@ -97,12 +98,15 @@
       }
     }
   },
+  "bin": {
+    "testweave": "src/generate-tests.js"
+  },
   "scripts": {
     "compile": "node build.js",
     "build": "npm run compile",
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "package": "npm run build:prod && vsce package -o ./build",
+    "package": "npm run build && vsce package -o ./build",
     "test": "vscode-test"
   },
   "devDependencies": {
