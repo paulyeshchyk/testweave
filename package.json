@@ -3,7 +3,7 @@
   "publisher": "paulyestchick",
   "displayName": "TestWeave",
   "description": "%app.description%",
-  "version": "0.1.10",
+  "version": "0.2.3",
   "engines": {
     "vscode": "^1.125.0"
   },
@@ -32,38 +32,74 @@
   "contributes": {
     "commands": [
       {
-        "command": "jsgeneratetests.generateTests.run",
-        "title": "%jsgeneratetests.generateTests.run.title%"
+        "command": "testweaver.generateTests.run",
+        "title": "%testweaver.generateTests.run.title%"
       },
       {
-        "command": "jsgeneratetests.generateTests.settings",
-        "title": "%jsgeneratetests.generateTests.settings.title%"
+        "command": "testweaver.generateTests.settings",
+        "title": "%testweaver.generateTests.settings.title%"
+      },
+      {
+        "command": "testweaver.generateTests.forModule",
+        "title": "%testweaver.generateTests.forModule.title%"
+      },
+      {
+        "command": "testweaver.generateTests.forFunction",
+        "title": "%testweaver.generateTests.forFunction.title%"
       }
     ],
     "submenus": [
       {
-        "id": "jsgenerateTests.submenu",
-        "label": "%jsgenerateTests.submenu.title%"
+        "id": "testweaver.explorer.submenu",
+        "label": "%testweaver.submenu.title%"
+      },
+      {
+        "id": "testweaver.editor.submenu",
+        "label": "%testweaver.submenu.title%"
       }
     ],
     "menus": {
       "explorer/context": [
         {
-          "submenu": "jsgenerateTests.submenu",
-          "when": "explorerResourceIsFolder",
-          "group": "navigation@1"
+          "submenu": "testweaver.explorer.submenu",
+          "group": "navigation"
         }
       ],
-      "jsgenerateTests.submenu": [
+      "editor/context": [
         {
-          "command": "jsgeneratetests.generateTests.run",
+          "submenu": "testweaver.editor.submenu",
+          "when": "resourceExtname == .js",
+          "group": "navigation"
+        }
+      ],
+      "testweaver.explorer.submenu": [
+        {
+          "command": "testweaver.generateTests.run",
           "when": "explorerResourceIsFolder",
-          "group": "1_top@1"
+          "group": "1_top"
         },
         {
-          "command": "jsgeneratetests.generateTests.settings",
-          "when": "explorerResourceIsFolder",
-          "group": "1_top@2"
+          "command": "testweaver.generateTests.forModule",
+          "when": "resourceExtname == .js",
+          "group": "2_top"
+        },
+        {
+          "command": "testweaver.generateTests.settings",
+          "group": "3_bottom"
+        }
+      ],
+      "testweaver.editor.submenu": [
+        {
+          "command": "testweaver.generateTests.forModule",
+          "group": "0top@1"
+        },
+        {
+          "command": "testweaver.generateTests.forFunction",
+          "group": "0top@2"
+        },
+        {
+          "command": "testweaver.generateTests.settings",
+          "group": "9bottom@1"
         }
       ]
     },

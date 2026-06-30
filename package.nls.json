@@ -10,14 +10,16 @@
   "extension.firsttime.select.source.folder.title": "Choose the root folder with JS files (rootDir)",
   "extension.firsttime.select.test.folder.title": "Choose folder to save test files",
   "extension.completion.message": "Test generation completed for project:\n{0}",
-  "jsgeneratetests.generateTests.run.title": "Run Test Generation",
-  "jsgeneratetests.generateTests.settings.title": "Settings",
-  "jsgenerateTests.submenu.title": "TestWeave",
+  "testweaver.generateTests.run.title": "Run Test Generation",
+  "testweaver.generateTests.settings.title": "Settings",
+  "testweaver.submenu.title": "TestWeave",
   "error.common.template": "Error: {0}",
   "currentOverwrite.text": "Overwrite existing .test.js files",
   "currentNoSkipIndex.text": "Generate tests for index.js",
   "currentIife.text": "Generate tests for browser IIFE scripts",
   "generation.extra.options.placeholder": "Extra generation options",
   "run.generator.title": "Generating Jest tests...",
-  "select.folder.placeholder": "Enter folder path manually"
+  "select.folder.placeholder": "Enter folder path manually",
+  "testweaver.generateTests.forModule.title": "Generate tests for module",
+  "testweaver.generateTests.forFunction.title": "Generate test for function"
 }

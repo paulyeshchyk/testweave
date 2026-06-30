@@ -10,14 +10,16 @@
   "extension.firsttime.select.source.folder.title": "Выберите корневую папку с JS-файлами (rootDir)",
   "extension.firsttime.select.test.folder.title": "Выберите папку для сохранения тестов",
   "extension.completion.message": "Генерация тестов завершена для проекта:\n{0}",
-  "jsgeneratetests.generateTests.run.title": "Запуск генерации тестов",
-  "jsgeneratetests.generateTests.settings.title": "Настройки",
-  "jsgenerateTests.submenu.title": "TestWeave",
+  "testweaver.generateTests.run.title": "Запуск генерации тестов",
+  "testweaver.generateTests.settings.title": "Настройки",
+  "testweaver.submenu.title": "TestWeave",
   "error.common.template": "`Ошибка: {0}`",
   "currentOverwrite.text": "Перезаписывать существующие .test.js файлы",
   "currentNoSkipIndex.text": "Генерировать тесты для index.js",
   "currentIife.text": "Генерировать для браузерных IIFE-скриптов",
   "generation.extra.options.placeholder": "Дополнительные параметры генерации",
   "run.generator.title": "Генерация Jest-тестов...",
-  "select.folder.placeholder": "Введите путь к папке вручную"
+  "select.folder.placeholder": "Введите путь к папке вручную",
+  "testweaver.generateTests.forModule.title": "Сгенерировать тесты для модуля",
+  "testweaver.generateTests.forFunction.title": "Сгенерировать тест для функции"
 }

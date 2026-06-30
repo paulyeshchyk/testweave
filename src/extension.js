@@ -1,15 +1,19 @@
+// src/extension.js
+
 import { initNls } from '../nls_loader.js';
 
 const { nls_ts, translate } = require('../nls_ts.js');
 const vscode = require('vscode');
 const generator = require('./generate-tests.js');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
     // Основная команда — Запуск генерации
-    const runCommand = vscode.commands.registerCommand('jsgeneratetests.generateTests.run', async () => {
+    const runCommand = vscode.commands.registerCommand('testweaver.generateTests.run', async () => {
         try {
             const config = vscode.workspace.getConfiguration('generateTests');
 
@@ -63,15 +67,155 @@ function activate(context) {
     });
 
     // Команда "Настройки"
-    const settingsCommand = vscode.commands.registerCommand('jsgeneratetests.generateTests.settings', () => {
+    const settingsCommand = vscode.commands.registerCommand('testweaver.generateTests.settings', () => {
         vscode.commands.executeCommand('workbench.action.openSettings', 'generateTests');
     });
+
+    const forModuleCommand = vscode.commands.registerCommand(
+        'testweaver.generateTests.forModule',
+        async (uri) => {
+            try {
+                let modulePath;
+                if (uri) {
+                    modulePath = uri.fsPath;
+                } else {
+                    const editor = vscode.window.activeTextEditor;
+                    if (!editor) {
+                        vscode.window.showErrorMessage('No active editor');
+                        return;
+                    }
+                    modulePath = editor.document.uri.fsPath;
+                }
+                if (!modulePath.endsWith('.js')) {
+                    vscode.window.showErrorMessage('Selected file is not a JavaScript file');
+                    return;
+                }
+                if (!fs.existsSync(modulePath)) {
+                    vscode.window.showErrorMessage('File not found');
+                    return;
+                }
+
+                const config = vscode.workspace.getConfiguration('generateTests');
+                const rootDir = config.get('defaultRootDir', '');
+                const outputDir = config.get('defaultOutputDir', '');
+
+                // Определяем путь к тестовому файлу
+                let testFilePath;
+                if (outputDir) {
+                    const relative = path.relative(rootDir, modulePath);
+                    if (relative && !relative.startsWith('..')) {
+                        const dir = path.dirname(relative);
+                        const baseName = path.basename(modulePath, '.js');
+                        testFilePath = path.join(outputDir, dir, baseName + '.test.js');
+                    } else {
+                        const baseName = path.basename(modulePath, '.js');
+                        testFilePath = path.join(outputDir, baseName + '.test.js');
+                    }
+                } else {
+                    testFilePath = modulePath.replace(/\.js$/, '.test.js');
+                }
+
+                const result = generator.generateTestsForModule(modulePath, testFilePath);
+                if (result > 0) {
+                    vscode.window.showInformationMessage(
+                        `Added ${result} test(s) for ${path.basename(modulePath)}`
+                    );
+                } else if (result === 0) {
+                    vscode.window.showInformationMessage(
+                        `No new tests added for ${path.basename(modulePath)}`
+                    );
+                } else {
+                    vscode.window.showErrorMessage('Failed to generate tests');
+                }
+            } catch (error) {
+                console.error(error);
+                let msg = error instanceof Error ? error.message : String(error);
+                vscode.window.showErrorMessage(msg);
+            }
+        }
+    );
+
+    // --- Новая команда: тест для функции ---
+    const forFunctionCommand = vscode.commands.registerCommand(
+        'testweaver.generateTests.forFunction',
+        async (uri) => {
+            try {
+                let modulePath;
+                if (uri) {
+                    modulePath = uri.fsPath;
+                } else {
+                    const editor = vscode.window.activeTextEditor;
+                    if (!editor) {
+                        vscode.window.showErrorMessage('No active editor');
+                        return;
+                    }
+                    modulePath = editor.document.uri.fsPath;
+                }
+                if (!modulePath.endsWith('.js')) {
+                    vscode.window.showErrorMessage('Selected file is not a JavaScript file');
+                    return;
+                }
+                if (!fs.existsSync(modulePath)) {
+                    vscode.window.showErrorMessage('File not found');
+                    return;
+                }
+
+                // Получаем список экспортируемых функций
+                const info = generator.getExportedNames(modulePath);
+                let funcNames = [];
+                if (info.type === 'function') {
+                    funcNames = [path.basename(modulePath, '.js')];
+                } else if (info.type === 'object' && info.exports?.length) {
+                    funcNames = info.exports;
+                } else {
+                    vscode.window.showErrorMessage('No exported functions found in this module');
+                    return;
+                }
+
+                const selected = await vscode.window.showQuickPick(funcNames, {
+                    placeHolder: 'Select a function to generate test for',
+                });
+                if (!selected) return;
+
+                const config = vscode.workspace.getConfiguration('generateTests');
+                const rootDir = config.get('defaultRootDir', '');
+                const outputDir = config.get('defaultOutputDir', '');
+
+                let testFilePath;
+                if (outputDir) {
+                    const relative = path.relative(rootDir, modulePath);
+                    if (relative && !relative.startsWith('..')) {
+                        const dir = path.dirname(relative);
+                        const baseName = path.basename(modulePath, '.js');
+                        testFilePath = path.join(outputDir, dir, baseName + '.test.js');
+                    } else {
+                        const baseName = path.basename(modulePath, '.js');
+                        testFilePath = path.join(outputDir, baseName + '.test.js');
+                    }
+                } else {
+                    testFilePath = modulePath.replace(/\.js$/, '.test.js');
+                }
+
+                const added = generator.generateTestForFunction(modulePath, selected, testFilePath);
+                if (added) {
+                    vscode.window.showInformationMessage(`Added test for function ${selected}`);
+                } else {
+                    vscode.window.showInformationMessage(`Test for ${selected} already exists`);
+                }
+            } catch (error) {
+                console.error(error);
+                let msg = error instanceof Error ? error.message : String(error);
+                vscode.window.showErrorMessage(msg);
+            }
+        }
+    );
 
     const locale = vscode.env.language;
     const rootPath = context.extensionPath;
     initNls(locale, rootPath);
 
     context.subscriptions.push(runCommand, settingsCommand);
+    context.subscriptions.push(forModuleCommand, forFunctionCommand);
 }
 
 /**

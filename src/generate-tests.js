@@ -1,9 +1,4 @@
-/**
- * generate-tests.js
- *
- * Генератор тестов для Jest.
- * Работает как CLI и как модуль.
- */
+// src/generate-tests.js
 
 const fs = require('fs');
 const path = require('path');
@@ -52,6 +47,10 @@ function getAllJSFiles(dir) {
  */
 function getExportedNames(modulePath) {
   try {
+    // Удаляем модуль из кеша, чтобы загрузить актуальную версию
+    const resolvedPath = require.resolve(modulePath);
+    delete require.cache[resolvedPath];
+
     const moduleExports = require(modulePath);
 
     if (typeof moduleExports === 'function') {
@@ -68,7 +67,7 @@ function getExportedNames(modulePath) {
 
     return { type: 'other' };
   } catch (err) {
-    console.error('getExportedNames',err)
+    console.error('getExportedNames', err);
     return { type: 'browser' };
   }
 }
@@ -294,6 +293,103 @@ Options:
   generateTests({ rootDir, outputDir, overwrite, generateIIFE, skipIndexJs });
 }
 
+/**
+ * Возвращает строку с require для модуля
+ * @param {string} modulePath
+ * @param {string} testFilePath
+ */
+function getRequireLine(modulePath, testFilePath) {
+  const moduleName = path.basename(modulePath, '.js');
+  const safeModuleName = sanitizeIdentifier(moduleName);
+  const relativeRequire = getRelativeRequire(modulePath, testFilePath);
+  return `const ${safeModuleName} = require('${relativeRequire}');`;
+}
+
+/**
+ * Генерирует блок теста для одной функции
+ * @param {string} modulePath
+ * @param {string} funcName
+ * @param {string} testFilePath
+ */
+function generateFunctionTestBlock(modulePath, funcName, testFilePath) {
+  const moduleName = path.basename(modulePath, '.js');
+  const safeModuleName = sanitizeIdentifier(moduleName);
+  return `
+describe('${funcName}', () => {
+    test('should be defined', () => {
+        expect(${safeModuleName}.${funcName}).toBeDefined();
+    });
+    test.todo('should work correctly');
+});`;
+}
+/**
+ * Добавляет тестовый блок в файл, если его ещё нет
+ * @param {string} testFilePath
+ * @param {string} block
+ * @param {string} identifier - имя функции
+ * @returns {boolean} true если блок добавлен, false если уже существует
+ */
+function addTestBlockToFile(testFilePath, block, identifier) {
+  let content = '';
+  if (fs.existsSync(testFilePath)) {
+    content = fs.readFileSync(testFilePath, 'utf8');
+    // Проверяем наличие блока по describe('identifier',
+    if (content.includes(`describe('${identifier}',`)) {
+      return false;
+    }
+  }
+  const newContent = content ? content + '\n\n' + block : block;
+  // Если файла не было, убедимся, что директория существует
+  const dir = path.dirname(testFilePath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(testFilePath, newContent, 'utf8');
+  return true;
+}
+
+/**
+ * Создаёт тест для одной функции (добавляет в файл)
+ * @param {string} modulePath
+ * @param {string} funcName
+ * @param {string} testFilePath
+ * @returns {boolean} true если тест добавлен, false если уже существовал
+ */
+function generateTestForFunction(modulePath, funcName, testFilePath) {
+  // Если файл не существует, создаём его с require
+  if (!fs.existsSync(testFilePath)) {
+    const requireLine = getRequireLine(modulePath, testFilePath);
+    const dir = path.dirname(testFilePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(testFilePath, requireLine + '\n\n', 'utf8');
+  }
+  const block = generateFunctionTestBlock(modulePath, funcName, testFilePath);
+  return addTestBlockToFile(testFilePath, block, funcName);
+}
+
+/**
+ * Создаёт тесты для всех функций модуля
+ * @param {string} modulePath
+ * @param {string} testFilePath
+ * @returns {number} количество добавленных тестов
+ */
+function generateTestsForModule(modulePath, testFilePath) {
+  const info = getExportedNames(modulePath);
+  let funcNames = [];
+  if (info.type === 'function') {
+    // Если модуль экспортирует функцию, используем имя файла как имя функции
+    funcNames = [path.basename(modulePath, '.js')];
+  } else if (info.type === 'object' && info.exports?.length) {
+    funcNames = info.exports;
+  } else {
+    console.log(`Module ${modulePath} does not export functions, skipping.`);
+    return 0;
+  }
+  let addedCount = 0;
+  for (const funcName of funcNames) {
+    const added = generateTestForFunction(modulePath, funcName, testFilePath);
+    if (added) addedCount++;
+  }
+  return addedCount;
+}
 /* ====================== Экспорт ====================== */
 
 module.exports = {
@@ -303,4 +399,6 @@ module.exports = {
   generateBrowserTest,
   getExportedNames,
   getRelativeRequire,
+  generateTestForFunction,
+  generateTestsForModule,
 };
